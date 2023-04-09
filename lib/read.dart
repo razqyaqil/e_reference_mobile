@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
 
 class ReadPage extends StatefulWidget {
   @override
@@ -9,15 +10,17 @@ class ReadPage extends StatefulWidget {
 }
 
 class _ReadPageState extends State<ReadPage> {
-  void _launchWebsiteUrl() async {
-    if (await canLaunch(
-        "https://repository.dinus.ac.id/docs/ajar/Software_Engineering_-_Pressman.pdf")) {
-      await launch(
-          "https://repository.dinus.ac.id/docs/ajar/Software_Engineering_-_Pressman.pdf"); // Membuka link website
-    } else {
-      throw 'Tidak dapat membuka link: https://repository.dinus.ac.id/docs/ajar/Software_Engineering_-_Pressman.pdf';
-    }
-  }
+  late PDFViewController pdfViewController;
+
+  // void _launchWebsiteUrl() async {
+  //   if (await canLaunch(
+  //       "https://repository.dinus.ac.id/docs/ajar/Software_Engineering_-_Pressman.pdf")) {
+  //     await launch(
+  //         "https://repository.dinus.ac.id/docs/ajar/Software_Engineering_-_Pressman.pdf"); // Membuka link website
+  //   } else {
+  //     throw 'Tidak dapat membuka link: https://repository.dinus.ac.id/docs/ajar/Software_Engineering_-_Pressman.pdf';
+  //   }
+  // }
 
   Future<void> showCitateDialog() async {
     return showDialog<void>(
@@ -123,8 +126,35 @@ class _ReadPageState extends State<ReadPage> {
                         primary: Colors.orange, // background
                         onPrimary: Colors.black, // foreground
                       ),
-                      onPressed: () {
-                        _launchWebsiteUrl();
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Scaffold(
+                              appBar: AppBar(
+                                title: const Text('PDF Viewer'),
+                                backgroundColor: Colors.black,
+                              ),
+                              body: PDFView(
+                                filePath:
+                                    'https://repository.dinus.ac.id/docs/ajar/Software_Engineering_-_Pressman.pdf',
+                                enableSwipe: true,
+                                swipeHorizontal: true,
+                                autoSpacing: false,
+                                pageSnap: false,
+                                onError: (e) {
+                                  print(e);
+                                },
+                                onRender: (pages) {
+                                  setState(() {});
+                                },
+                                onViewCreated: (PDFViewController vc) {
+                                  pdfViewController = vc;
+                                },
+                              ),
+                            ),
+                          ),
+                        );
                       },
                       child: const Text('Read'),
                     ),
